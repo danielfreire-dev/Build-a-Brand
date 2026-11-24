@@ -1,1 +1,18 @@
-{"name": "build-a-brand", "description": "Back-and-forth design interview that builds a brand identity tailored to the user's own business, never copied from others. Covers touchpoints, style and audience (B2B, B2C, B2M, M2M/MCP), then distinct directions, mockups (landing page, business card, slides) and a style brief. Use whenever someone wants to create or rethink how their brand looks."}
+{
+	"name": "build-a-brand",
+	"version": "1.0.0",
+	"description": "Back-and-forth design interview that builds a brand identity tailored to the user's own business, never copied from others. Covers touchpoints, style, and audience, then distinct directions, mockups, and a style brief.",
+	"author": {
+		"name": "Daniel Freire",
+		"url": "https://daniel-freire.com"
+	},
+	"suggestedPrompts": [
+		"I want to build a brand for my new business. Can we start?",
+		"Help me rethink the visual identity and positioning for my developer tool.",
+		"Review my existing brand touchpoints and recommend three fresh creative directions."
+	],
+	"homepage": "https://github.com/danielfreire-dev/Build-a-Brand",
+	"repository": "https://github.com/danielfreire-dev/Build-a-Brand",
+	"license": "Apache-2.0",
+	"keywords": ["branding", "brand-identity", "design-system", "design-tokens", "claude-code", "ai-skills"]
+}

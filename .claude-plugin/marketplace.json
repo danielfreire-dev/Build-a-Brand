@@ -1,0 +1,22 @@
+{
+	"$schema": "https://json.schemastore.org/claude-code-marketplace.json",
+	"name": "build-a-brand-marketplace",
+	"version": "1.0.0",
+	"description": "Senior-designer-level brand identity design skill for AI agents",
+	"owner": {
+		"name": "Daniel Freire",
+		"url": "https://daniel-freire.com"
+	},
+	"plugins": [
+		{
+			"name": "build-a-brand",
+			"description": "Back-and-forth design interview that builds a brand identity tailored to the user's own business.",
+			"category": "design",
+			"author": {
+				"name": "Daniel Freire"
+			},
+			"source": "./",
+			"homepage": "https://github.com/danielfreire-dev/Build-a-Brand"
+		}
+	]
+}
