@@ -110,7 +110,7 @@ A brand that shouts in its dashboard is tiring by Tuesday. A brand that whispers
 | Typography | Robert Bringhurst | *The Elements of Typographic Style*: 45–75 characters a line, few sizes, type that serves the text. |
 | Emotion in layers | Don Norman | Visceral (the first five seconds), behavioral (in use), reflective (what it says about me). |
 | Motion as story | Saul Bass | Title sequences that tell a film's idea in seconds, and logos that lasted decades. |
-| Motion craft | Emil Kowalski, Jakub Krehel, Jhey Tompkins | Through the design-motion-principles skill: restraint, polish and play in UI motion. |
+| Motion craft | Emil Kowalski, Jakub Krehel, Jhey Tompkins | Restraint, polish and play. Kowalski asks whether something should animate at all, Krehel whether it is subtle enough to ship, Tompkins what it could become. See Motion in section 7. |
 | Charts | Edward Tufte | Spend the ink on data; cut the chartjunk. |
 | Tokens and components | Jina Anne, Brad Frost | Design tokens as the single source for every value, and Atomic Design's build-up from small parts to whole pages. |
 
@@ -622,13 +622,59 @@ Lock these while refining the chosen direction. Each gets options, a recommendat
 - Whitespace signals confidence and luxury.
 
 **Motion** is part of the identity, not decoration added at the end.
-- **Derive it from the personality.** Snappy and springy reads energetic or playful. A slow ease-out reads calm or premium. Linear reads mechanical. Bounce belongs to playful brands and celebration moments, never to everyday actions in a serious brand.
-- **Apply Emil Kowalski's frequency rule.** Actions people repeat all day (menus, toggles, keyboard shortcuts) get little or no motion. Rare moments (the logo reveal, a launch, onboarding, a success state) can be expressive. The best motion in everyday UI goes unnoticed.
-- **Set motion tokens:** 2–3 durations (for example 150 ms small, 250 ms medium, 400 ms large) and 1–2 custom easing curves instead of the browser default.
-- **Keep exits quieter than entrances.** Start scale animations from about 0.9–0.95, never from zero.
+- **Three motion lenses, weighted like the design lenses.** These distill each designer's published articles, courses and talks; they didn't write or endorse this skill.
+  - **Emil Kowalski: restraint.** *"Should this animate at all?"* Leads for developer tools, dashboards, enterprise and regulated B2B.
+  - **Jakub Krehel: production polish.** *"Is this subtle and refined enough to ship?"* Leads for consumer apps, D2C, marketing sites and luxury.
+  - **Jhey Tompkins: play.** *"What could this become?"* Leads for kids, culture and creative studios. Elsewhere keep it for onboarding, empty states, the 404 page and launches.
+
+  As a rule of thumb, a Vignelli-led brand moves like Kowalski, a Rand-led brand like Krehel, and a Scher-led brand like Tompkins. State the motion weighting in the same recap as the design weighting.
+- **Derive it from the personality.** Snappy and springy reads energetic or playful. A slow ease-out reads calm or premium. Linear reads mechanical.
+- **Apply Emil Kowalski's frequency rule.** Actions people repeat all day (menus, toggles, tabs) get little or no motion. Anything started from the keyboard never animates. Rare moments (the logo reveal, a launch, onboarding, a success state) can be expressive. The best motion in everyday UI goes unnoticed: if people remark on an animation every time, it's too loud, unless delight is the point (kids, games, celebrations).
+- **Time it by lens.** Kowalski-led: under 300 ms, around 180 ms for most UI. Krehel-led: 200–500 ms for smoothness. Tompkins-led: whatever serves the effect. Smaller elements move faster than large ones.
+- **Choose easing by what the element is doing:**
+  - entering: ease-out (fast start, gentle stop)
+  - leaving: ease-in
+  - changing while it stays on screen: ease-in-out
+  - continuous loops and progress bars: linear
+  - interactive elements: a spring without overshoot (`bounce: 0`), or an equivalent custom curve
+
+  Always use custom `cubic-bezier()` curves, never the browser's default `ease`. Bounce and elastic easing belong only to playful brands and celebration moments, never on dropdowns, toggles, menus, modals or error states. For a playful brand in pure CSS, `linear()` can describe a bounce or spring.
+- **Set motion tokens:** 2–3 durations (for example 150 ms small, 250 ms medium, 400 ms large) and 1–2 custom easing curves.
+- **Enter and exit:**
+  - a standard entrance combines opacity 0 → 1 with a small rise (about 8 px → 0); a slight blur (4 px → 0) makes the element seem to come into focus, but use it on a few hero moments, not every section
+  - exits are quieter than entrances: less movement, shorter, because attention has already moved on (unless the exit itself matters, such as a deliberate dismissal or deletion)
+  - scale animations start from about 0.9–0.95, never from zero
+  - things grow from where they come from: a dropdown opens from its trigger (`transform-origin: top center`), not from its own center
+- **Feedback:**
+  - buttons press in slightly on `:active` (`scale(0.97)`)
+  - hover changes take 150–200 ms rather than snapping
+  - icon swaps such as copy → check cross-fade with opacity and a small scale, so the change registers
+- **Build it to perform:**
+  - animate only `transform`, `opacity`, `filter` and `clip-path`, never `width`, `height`, `top` or `left`
+  - use `clip-path: inset()` for image and section reveals
+  - use CSS transitions rather than keyframes for anything a user can retrigger, so the motion can change course mid-flight instead of jumping
+  - keep `will-change` for the few elements that need it
 - **Pick one signature behavior,** such as how the logo resolves or how panels arrive, and reuse it.
-- **Respect reduced-motion settings** in everything you build.
-- If the **design-motion-principles** skill is available, use it for the motion layer of interactive mockups.
+- **Respect reduced motion** in everything you build. Put movement inside `@media (prefers-reduced-motion: no-preference)`, or under `reduce` replace it with a plain fade or an instant change. Avoid vestibular triggers (big zooms, spins, parallax), and give any loop a way to pause.
+
+A starting point for motion tokens in a mockup (tune the values to the lens weighting):
+
+```css
+:root {
+  --dur-sm: 150ms;
+  --dur-md: 250ms;
+  --dur-lg: 400ms;
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);    /* entering */
+  --ease-in: cubic-bezier(0.55, 0, 1, 0.45);     /* leaving */
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1); /* changing in place */
+}
+@media (prefers-reduced-motion: no-preference) {
+  .reveal { opacity: 0; transform: translateY(8px);
+            transition: opacity var(--dur-md) var(--ease-out),
+                        transform var(--dur-md) var(--ease-out); }
+  .reveal.is-in { opacity: 1; transform: none; }
+}
+```
 
 **Sound** (video, apps, retail, podcasts): a 2–3 second sonic logo, UI sounds, a music mood.
 
@@ -803,7 +849,8 @@ Generated mockups drift toward the same handful of patterns, and that look is th
 - **Default palette:** purple-to-blue gradients, gradient text in headlines, neon glows on dark backgrounds, when the brand truths didn't produce them
 - **Default type:** one common sans for everything, at similar weights, with no typographic signature
 - **The template page:** centered hero, three feature cards with an icon in a rounded square, a logo wall, a testimonial carousel, then a call-to-action band. Use the sections the brand needs, in the order its story needs.
-- **The same treatment everywhere:** identical radius, shadow and hover-scale on every element, the same fade-up on every section, a stagger on every list. Fix it when 3 or more components share an effect for no reason.
+- **The same treatment everywhere:** identical radius, shadow and hover-scale on every element, the same fade-up or blur-in on every section, a stagger on every list. Fix it when 3 or more components share an effect for no reason, or when 2 or more lists in one view stagger in.
+- **Motion where none belongs:** entrance animations on headings, body text and navigation, which only delay reading; bouncy springs on dropdowns, toggles, menus and modals
 - **Decoration without meaning:** emoji or generic icons as feature illustrations, abstract blobs, frosted-glass cards, sparkle icons, "✨ New" pill badges
 - **Copy on autopilot:** "Unlock the power of…", "Transform your workflow", "seamless", "revolutionary", "elevate". If a competitor could say the line, rewrite it.
 - **Pulsing, glowing or looping effects** that exist only to look alive
